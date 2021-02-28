@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Фильмы</string>
+    <string name="NameButton">Детали</string>
+    <string name="invite">Приглашение в приложение</string>
+    <string name="checkBoxName">Нравится</string>
+    <string name="textComment">Комментарий:</string>
+    <string name="NameButtonInvite">Пригласить друга</string>
+    <string name="Title2">Аферистка</string>
+    <string name="Title3" translatable="false">Мортал Комбат</string>
+    <string name="favorite">Избраное</string>
+    <string name="titleQuite">Выход</string>
+    <string name="responseYes">Да</string>
+    <string name="responseNo">Нет</string>
+    <string name="questionQuite">Закрыть приложение?</string>
+</resources>

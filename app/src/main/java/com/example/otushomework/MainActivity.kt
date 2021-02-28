@@ -1,52 +1,96 @@
 package com.example.otushomework
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.TextView
-import java.io.Serializable
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        const val EXTRA_CLICKED = "EXTRA_CLICKED"
         const val REQUEST_CODE = 1
+        const val REQUEST_CODE_FAVORITE = 2
+        const val EXTRA_LIST = "EXTRA_LIST"
     }
 
-    private val textView1 by lazy{findViewById<TextView>(R.id.textView1)}
-    private val textView2 by lazy{findViewById<TextView>(R.id.textView2)}
-    private val textView3 by lazy{findViewById<TextView>(R.id.textView3)}
-
-    private val button1 by lazy{findViewById<View>(R.id.button1)}
-    private val button2 by lazy{findViewById<View>(R.id.button2)}
-    private val button3 by lazy{findViewById<View>(R.id.button3)}
     private val buttonInvite by lazy{findViewById<View>(R.id.buttonInvite)}
+    private val buttonFavorite by lazy{findViewById<View>(R.id.buttonFavorite)}
 
-    private var clicked1 = false
-    private var clicked2 = false
-    private var clicked3 = false
+    private var filmsList:List<FilmItem> = mutableListOf()
+
+    private val recyclerView by lazy { findViewById<RecyclerView>(R.id.films_rv) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        savedInstanceState?.getSerializable(EXTRA_CLICKED)?.let {
-            val clickedData = it as ClickedData
-            clicked1 = clickedData.clicked1
-            clicked2 = clickedData.clicked2
-            clicked3 = clickedData.clicked3
+        val data = savedInstanceState?.getSerializable(EXTRA_LIST)
 
-            if (clicked1){textView1.setTextColor(Color.BLUE)}
-            if (clicked2){textView2.setTextColor(Color.BLUE)}
-            if (clicked3){textView3.setTextColor(Color.BLUE)}
+        if(data == null){
+            filmsList = mutableListOf(
+                    FilmItem(0, resources.getString(R.string.Title1), R.drawable.film1, resources.getString(R.string.description1), false, false),
+                    FilmItem(1, resources.getString(R.string.Title2), R.drawable.film2, resources.getString(R.string.description2), false, false),
+                    FilmItem(2, resources.getString(R.string.Title3), R.drawable.film3, resources.getString(R.string.description3), false, false),
+                    FilmItem(3, resources.getString(R.string.Title1), R.drawable.film1, resources.getString(R.string.description1), false, false),
+                    FilmItem(4, resources.getString(R.string.Title2), R.drawable.film2, resources.getString(R.string.description2), false, false),
+                    FilmItem(5, resources.getString(R.string.Title3), R.drawable.film3, resources.getString(R.string.description3), false, false)
+            )
+        }
+        else{
+            data?.let {
+                val listData = it as FilmsListData
+                filmsList = listData.films
+            }
         }
 
-        button1.setOnClickListener(this::clickListener)
-        button2.setOnClickListener(this::clickListener)
-        button3.setOnClickListener(this::clickListener)
+        initRecycler()
+        initClickListeners()
+    }
+
+    private fun initRecycler(){
+
+        var columns :Int
+        val orientation = this.resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            columns = 1
+        } else {
+            columns = 2
+        }
+
+        recyclerView.layoutManager = GridLayoutManager(recyclerView.context, columns, GridLayoutManager.VERTICAL, false)
+        recyclerView.adapter = FilmsAdapter(filmsList, object : FilmsAdapter.FilmsClickListener {
+            override fun onFilmClick(filmItem: FilmItem) {
+
+                filmItem.clicked = true
+
+                recyclerView.adapter?.notifyDataSetChanged()
+
+                val intent = Intent(this@MainActivity, DescriptionActivity::class.java)
+                intent.putExtra(DescriptionActivity.EXTRA_HEADER, SomeData(filmItem.description, filmItem.idImage))
+
+                startActivityForResult(intent, REQUEST_CODE)
+            }
+
+            override fun onFavoriteClick(filmItem: FilmItem) {
+
+                filmItem.favorite = !filmItem.favorite
+
+                recyclerView.adapter?.notifyDataSetChanged()
+            }
+        })
+
+        val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        recyclerView.addItemDecoration(itemDecoration)
+    }
+
+    private fun initClickListeners(){
 
         buttonInvite.setOnClickListener {
 
@@ -56,49 +100,22 @@ class MainActivity : AppCompatActivity() {
 
             startActivity(intent)
         }
-    }
 
-    private fun clickListener(view: View){
+        buttonFavorite.setOnClickListener {
 
-        lateinit var description:String
-        var idImage = 0
-        lateinit var textViewCurrent:TextView
+            val intent = Intent(this, FavoriteActivity::class.java)
+            val filmsListFavorite = mutableListOf<FilmItem>()
 
-        if (view.id == R.id.button1){
+            this.filmsList.forEach {
 
-            textViewCurrent = textView1
-            description = resources.getString(R.string.description1)
-            idImage = R.drawable.film1
-            clicked1 = true
+                if(it.favorite){
+                    filmsListFavorite.add(FilmItem(it.id, it.title, it.idImage, it.description, it.clicked, it.favorite))
+                }
+            }
+
+            intent.putExtra(FavoriteActivity.EXTRA_LIST, FilmsListData(filmsListFavorite))
+            startActivityForResult(intent, REQUEST_CODE_FAVORITE)
         }
-        else if (view.id == R.id.button2){
-
-            textViewCurrent = textView2
-            description = resources.getString(R.string.description2)
-            idImage = R.drawable.film2
-            clicked2 = true
-        }
-        else if (view.id == R.id.button3){
-
-            textViewCurrent = textView3
-            description = resources.getString(R.string.description3)
-            idImage = R.drawable.film3
-            clicked3 = true
-        }
-        else return
-
-        textViewCurrent.setTextColor(Color.BLUE)
-
-        val intent = Intent(this, DescriptionActivity::class.java)
-        intent.putExtra(DescriptionActivity.EXTRA_HEADER, SomeData(description, idImage))
-
-        startActivityForResult(intent, REQUEST_CODE)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putSerializable(EXTRA_CLICKED, ClickedData(clicked1, clicked2, clicked3))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -115,7 +132,49 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        else if(requestCode == REQUEST_CODE_FAVORITE){
+            if(resultCode == Activity.RESULT_OK){
+
+                data?.getSerializableExtra(FavoriteActivity.EXTRA_RESULT)?.let {
+                    val resultData = it as FilmsListData
+
+                    filmsList.forEach {
+                        val item = it
+
+                        if(resultData.films.find { it.id == item.id } == null && item.favorite){
+                            item.favorite = false
+                        }
+                    }
+                    recyclerView.adapter?.notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+
+        val listener = DialogInterface.OnClickListener { dialogInterface, i ->
+            if(i == AlertDialog.BUTTON_POSITIVE) {
+                dialogInterface.dismiss()
+                super.onBackPressed()
+            }
+            else
+                dialogInterface.dismiss()
+        }
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.titleQuite))
+        builder.setMessage(getString(R.string.questionQuite))
+        builder.setPositiveButton(getString(R.string.responseYes), listener)
+        builder.setNegativeButton(getString(R.string.responseNo), listener)
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putSerializable(EXTRA_LIST, FilmsListData(filmsList))
     }
 }
-
-data class ClickedData(val clicked1: Boolean, val clicked2: Boolean, val clicked3: Boolean):Serializable
