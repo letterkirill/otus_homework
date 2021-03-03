@@ -24,16 +24,16 @@ class FilmsAdapter(private val items: List<FilmItem>, private val clickListener:
         holder.bind(item)
 
         holder.titleFilmView.setOnClickListener{
-            clickListener.onFilmClick(item)
+            clickListener.onFilmClick(item, holder.adapterPosition)
         }
 
         holder.imageViewFavorite.setOnClickListener{
-            clickListener.onFavoriteClick(item)
+            clickListener.onFavoriteClick(item, holder.adapterPosition)
         }
     }
 
     interface FilmsClickListener{
-        fun onFilmClick(filmItem:FilmItem)
-        fun onFavoriteClick(filmItem:FilmItem)
+        fun onFilmClick(filmItem:FilmItem, position: Int)
+        fun onFavoriteClick(filmItem:FilmItem, position: Int)
     }
 }

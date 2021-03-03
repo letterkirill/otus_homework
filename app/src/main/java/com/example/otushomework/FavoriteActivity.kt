@@ -45,9 +45,7 @@ class FavoriteActivity : AppCompatActivity() {
             override fun onDeleteClick(position: Int) {
 
                 filmsList.removeAt(position)
-                recyclerView.adapter?.notifyDataSetChanged()
-                //recyclerView.adapter?.notifyItemRemoved(position)
-                //recyclerView.adapter?.notifyItemRangeRemoved(position, filmsList.size)
+                recyclerView.adapter?.notifyItemRemoved(position)
             }
         })
 

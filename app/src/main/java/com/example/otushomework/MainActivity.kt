@@ -66,11 +66,11 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = GridLayoutManager(recyclerView.context, columns, GridLayoutManager.VERTICAL, false)
         recyclerView.adapter = FilmsAdapter(filmsList, object : FilmsAdapter.FilmsClickListener {
-            override fun onFilmClick(filmItem: FilmItem) {
+            override fun onFilmClick(filmItem: FilmItem, position: Int) {
 
                 filmItem.clicked = true
 
-                recyclerView.adapter?.notifyDataSetChanged()
+                recyclerView.adapter?.notifyItemChanged(position)
 
                 val intent = Intent(this@MainActivity, DescriptionActivity::class.java)
                 intent.putExtra(DescriptionActivity.EXTRA_HEADER, SomeData(filmItem.description, filmItem.idImage))
@@ -78,11 +78,11 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(intent, REQUEST_CODE)
             }
 
-            override fun onFavoriteClick(filmItem: FilmItem) {
+            override fun onFavoriteClick(filmItem: FilmItem, position: Int) {
 
                 filmItem.favorite = !filmItem.favorite
 
-                recyclerView.adapter?.notifyDataSetChanged()
+                recyclerView.adapter?.notifyItemChanged(position)
             }
         })
 

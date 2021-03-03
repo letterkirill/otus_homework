@@ -33,7 +33,7 @@ class FavoriteAdapter(private val items: List<FilmItem>, private val clickListen
         val item = items[position]
         holder.bind(item)
         
-        holder.imageViewButton.setOnClickListener{clickListener.onDeleteClick(position)}
+        holder.imageViewButton.setOnClickListener{clickListener.onDeleteClick(holder.adapterPosition)}
     }
 
     override fun getItemCount(): Int {
