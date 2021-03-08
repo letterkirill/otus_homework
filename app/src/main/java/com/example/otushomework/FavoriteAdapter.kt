@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class FavoriteAdapter(private val items: List<FilmItem>, private val clickListener: FavoriteAdapter.FilmsClickListener): RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>() {
+class FavoriteAdapter(private val items: List<FilmItem>, private val clickListener: FilmsClickListener?): RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder>() {
 
     class FavoriteViewHolder(itemView:View): RecyclerView.ViewHolder(itemView){
         private val titleFilmView: TextView = itemView.findViewById(R.id.titleFilm)
@@ -33,7 +33,7 @@ class FavoriteAdapter(private val items: List<FilmItem>, private val clickListen
         val item = items[position]
         holder.bind(item)
         
-        holder.imageViewButton.setOnClickListener{clickListener.onDeleteClick(holder.adapterPosition)}
+        holder.imageViewButton.setOnClickListener{clickListener?.onDeleteClick(item.id, holder.adapterPosition)}
     }
 
     override fun getItemCount(): Int {
@@ -41,6 +41,6 @@ class FavoriteAdapter(private val items: List<FilmItem>, private val clickListen
     }
 
     interface FilmsClickListener{
-        fun onDeleteClick(position: Int)
+        fun onDeleteClick(id: Int, position: Int)
     }
 }

@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Фильмы</string>
     <string name="NameButton">Детали</string>
-    <string name="invite">Приглашение в приложение</string>
+    <string name="invite">Пригласить друга</string>
     <string name="checkBoxName">Нравится</string>
     <string name="textComment">Комментарий:</string>
     <string name="NameButtonInvite">Пригласить друга</string>
@@ -13,4 +13,6 @@
     <string name="responseYes">Да</string>
     <string name="responseNo">Нет</string>
     <string name="questionQuite">Закрыть приложение?</string>
+    <string name="RemovedFilm">Фильм удален из избранного</string>
+    <string name="AddedFilm">Фильм добавлен в избранное</string>
 </resources>

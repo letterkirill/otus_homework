@@ -16,4 +16,8 @@
     <string name="titleQuite">Quite</string>
     <string name="responseYes">Yes</string>
     <string name="responseNo">No</string>
+    <string name="open" translatable="false">open</string>
+    <string name="close" translatable="false">close</string>
+    <string name="RemovedFilm">Removed film</string>
+    <string name="AddedFilm">Added film</string>
 </resources>
