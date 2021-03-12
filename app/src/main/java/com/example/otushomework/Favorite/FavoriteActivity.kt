@@ -24,19 +24,7 @@ class FavoriteActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorite)
 
-        val data = savedInstanceState?.getSerializable(MainActivity.EXTRA_LIST)
-
-        if (data == null) {
-            intent.getSerializableExtra(EXTRA_LIST)?.let {
-                val filmsListData = it as FilmsListData
-                filmsList = filmsListData.films.toMutableList()
-            }
-        } else {
-            data?.let {
-                val listData = it as FilmsListData
-                filmsList = listData.films.toMutableList()
-            }
-        }
+        initFilmsListData(savedInstanceState)
 
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
@@ -53,6 +41,19 @@ class FavoriteActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(itemDecoration)
     }
 
+    private fun initFilmsListData(savedInstanceState: Bundle?){
+
+        val data = savedInstanceState?.getParcelable<FilmsListData>(MainActivity.EXTRA_LIST)
+
+        if (data == null) {
+            intent.getParcelableExtra<FilmsListData>(EXTRA_LIST)?.let {
+                filmsList = it.films.toMutableList()
+            }
+        } else {
+            data?.let{filmsList = it.films.toMutableList()}
+        }
+    }
+
     override fun onBackPressed() {
 
         val intentR = Intent()
@@ -65,6 +66,6 @@ class FavoriteActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putSerializable(EXTRA_LIST, FilmsListData(filmsList))
+        outState.putParcelable(EXTRA_LIST, FilmsListData(filmsList))
     }
 }

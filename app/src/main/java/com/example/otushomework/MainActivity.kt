@@ -31,27 +31,29 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val data = savedInstanceState?.getSerializable(EXTRA_LIST)
-
-        if(data == null){
-            filmsList = mutableListOf(
-                    FilmItem(0, resources.getString(R.string.Title1), R.drawable.film1, resources.getString(R.string.description1), false, false),
-                    FilmItem(1, resources.getString(R.string.Title2), R.drawable.film2, resources.getString(R.string.description2), false, false),
-                    FilmItem(2, resources.getString(R.string.Title3), R.drawable.film3, resources.getString(R.string.description3), false, false),
-                    FilmItem(3, resources.getString(R.string.Title1), R.drawable.film1, resources.getString(R.string.description1), false, false),
-                    FilmItem(4, resources.getString(R.string.Title2), R.drawable.film2, resources.getString(R.string.description2), false, false),
-                    FilmItem(5, resources.getString(R.string.Title3), R.drawable.film3, resources.getString(R.string.description3), false, false)
-            )
-        }
-        else{
-            data?.let {
-                val listData = it as FilmsListData
-                filmsList = listData.films
-            }
-        }
+        initFilmsListData(savedInstanceState)
 
         initRecycler()
         initClickListeners()
+    }
+
+    private fun initFilmsListData(savedInstanceState: Bundle?){
+
+        val data = savedInstanceState?.getParcelable<FilmsListData>(EXTRA_LIST)
+
+        if(data == null){
+            filmsList = mutableListOf(
+                FilmItem(0, resources.getString(R.string.Title1), R.drawable.film1, resources.getString(R.string.description1), false, false),
+                FilmItem(1, resources.getString(R.string.Title2), R.drawable.film2, resources.getString(R.string.description2), false, false),
+                FilmItem(2, resources.getString(R.string.Title3), R.drawable.film3, resources.getString(R.string.description3), false, false),
+                FilmItem(3, resources.getString(R.string.Title1), R.drawable.film1, resources.getString(R.string.description1), false, false),
+                FilmItem(4, resources.getString(R.string.Title2), R.drawable.film2, resources.getString(R.string.description2), false, false),
+                FilmItem(5, resources.getString(R.string.Title3), R.drawable.film3, resources.getString(R.string.description3), false, false)
+            )
+        }
+        else{
+            data?.let{filmsList = it.films}
+        }
     }
 
     private fun initRecycler(){
@@ -124,19 +126,17 @@ class MainActivity : AppCompatActivity() {
         if(requestCode == REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK){
 
-                data?.getSerializableExtra(DescriptionActivity.EXTRA_RESULT)?.let {
-
-                    val resultData = it as ResultData
-                    Log.i("RESULT_CHECKED", resultData.checked.toString())
-                    Log.i("RESULT_TEXT", resultData.text)
+                data?.getParcelableExtra<ResultData>(DescriptionActivity.EXTRA_RESULT)?.let {
+                    Log.i("RESULT_CHECKED", it.checked.toString())
+                    Log.i("RESULT_TEXT", it.text)
                 }
             }
         }
         else if(requestCode == REQUEST_CODE_FAVORITE){
             if(resultCode == Activity.RESULT_OK){
 
-                data?.getSerializableExtra(FavoriteActivity.EXTRA_RESULT)?.let {
-                    val resultData = it as FilmsListData
+                data?.getParcelableExtra<FilmsListData>(FavoriteActivity.EXTRA_RESULT)?.let {
+                    val resultData = it
 
                     filmsList.forEach {
                         val item = it
@@ -175,6 +175,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putSerializable(EXTRA_LIST, FilmsListData(filmsList))
+        outState.putParcelable(EXTRA_LIST, FilmsListData(filmsList))
     }
 }
